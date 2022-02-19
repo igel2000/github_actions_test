@@ -1,0 +1,1 @@
+# Тестирование github action

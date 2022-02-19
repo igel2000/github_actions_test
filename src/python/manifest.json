@@ -1,0 +1,9 @@
+{
+  "name": "map",
+  "description": {
+    "en": "Python module",
+    "ru": "Модуль Pytron"
+  },
+  "version": "${VERSION}",
+  "plugin_path": "./map_plugin"
+}
