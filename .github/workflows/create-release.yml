@@ -10,8 +10,8 @@ jobs:
   changelog:
     name: Generate changelog
     runs-on: ubuntu-latest
-    outputs:
-      output1: ${{ steps.git-cliff.outputs.changelog }}
+    #outputs:
+    #  output1: ${{ steps.git-cliff.outputs.changelog }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -28,20 +28,16 @@ jobs:
         env:
           OUTPUT: CHANGELOG.md
 
-      #- name: Print the changelog
-      #  run: cat "${{ steps.git-cliff.outputs.changelog }}"
-
       - name: Upload CHANGELOG.md
         uses: actions/upload-artifact@v2
         with:
           name: changelog
           path: CHANGELOG.md
 
-  zip-files:
+  create_release_bin:
     runs-on: ubuntu-latest
-    needs: changelog
-    permissions:
-      contents: write
+    #permissions:
+    #  contents: write
 
     steps:
       - name: Checkout
@@ -62,19 +58,33 @@ jobs:
           dest: release.zip
           recursive: true
 
-      #- name: Changelog
-      #  uses: scottbrenner/generate-changelog-action@master
-      #  id: Changelog
+      - name: Upload release.zip
+        uses: actions/upload-artifact@v2
+        with:
+          name: release_bin
+          path: release.zip
+
+  publish:
+    runs-on: ubuntu-latest
+    needs: [changelog, create_release_bin]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: Download CHANGELOG.md
         uses: actions/download-artifact@v2
         with:
           name: changelog
 
+      - name: Download release.zip
+        uses: actions/download-artifact@v2
+        with:
+          name: release_bin
+
       - name: Publish
         uses: softprops/action-gh-release@v1
         with:
-          files: "ManageAppProjects.zip"
+          files: "release.zip"
           body_path: CHANGELOG.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
