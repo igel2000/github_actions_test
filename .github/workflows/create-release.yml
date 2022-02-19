@@ -10,14 +10,11 @@ jobs:
   changelog:
     name: Generate changelog
     runs-on: ubuntu-latest
-    #outputs:
-    #  output1: ${{ steps.git-cliff.outputs.changelog }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-
       - name: Generate a changelog
         uses: orhun/git-cliff-action@v1
         id: git-cliff
@@ -27,7 +24,6 @@ jobs:
           args: -vv --latest --strip header
         env:
           OUTPUT: CHANGELOG.md
-
       - name: Upload CHANGELOG.md
         uses: actions/upload-artifact@v2
         with:
@@ -36,28 +32,22 @@ jobs:
 
   create_release_bin:
     runs-on: ubuntu-latest
-    #permissions:
-    #  contents: write
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           fetch-depth: 0
-
       - name: Update version
         uses: brettdorrans/write-version-to-file@master
         with:
           filename: 'src/python/manifest.json'
           placeholder: '${VERSION}'
-
       - name: Create zip
         uses: papeloto/action-zip@v1
         with:
           files: src/python readme.md
           dest: release.zip
           recursive: true
-
       - name: Upload release.zip
         uses: actions/upload-artifact@v2
         with:
@@ -70,17 +60,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
       - name: Download CHANGELOG.md
         uses: actions/download-artifact@v2
         with:
           name: changelog
-
       - name: Download release.zip
         uses: actions/download-artifact@v2
         with:
           name: release_bin
-
       - name: Publish
         uses: softprops/action-gh-release@v1
         with:
